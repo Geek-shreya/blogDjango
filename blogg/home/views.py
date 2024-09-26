@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from home.models import Contact
+from blog.models import Post
 
 def home(request):
     return render(request, 'home/home.html')
@@ -23,3 +24,9 @@ def contact(request):
 
 def about(request):
     return render(request, 'home/about.html')
+
+def search(request):
+    query = request.GET['query']
+    allPosts = Post.objects.filter(title__icontains=query)
+    params = {'allPosts' : allPosts}
+    return render(request, 'home/search.html', params)
