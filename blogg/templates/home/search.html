@@ -6,6 +6,16 @@
 
 <div class="container my-4">
     <h3 class="my-4 fw-semibold">Search Results: </h3>
+    {% if allPosts|length < 1 %}
+      Your search - <b>{{query}}</b> - did not match any documents.<br>
+
+      Suggestions:<br>
+      <ul>
+        <li>Make sure that all words are spelled correctly.</li>
+        <li>Try different keywords.</li>
+        <li>Try more general keywords.</li>
+      </ul>
+    {% endif %}
     {% for post in allPosts %}
     <div class="col-md-10">
         <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
