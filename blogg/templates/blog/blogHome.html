@@ -11,7 +11,7 @@
         <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
           <div class="col p-4 d-flex flex-column position-static">
             <strong class="d-inline-block mb-2 text-primary-emphasis">Article by {{post.author}}</strong>
-            <h3 class="mb-0">{{post.title}}</h3>
+            <h3 class="mb-0"><a href="/blog/{{post.slug}}" class="text-dark" style="text-decoration: none;">{{post.title}}</a></h3>
             <div class="mb-1 text-body-secondary">{{ post.content | truncatechars:300 }}</div>
             <div class="my-3">
                 <a href="/blog/{{post.slug}}" class="icon-link gap-1 icon-link-hover stretched-link btn btn-primary" role="button">
