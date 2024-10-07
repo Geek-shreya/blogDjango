@@ -4,12 +4,15 @@
 
 {% block body %}
 {% load humanize %}
+{% load extras %}
+
 <div class="container my-3">
     <div class="blog-post">
         <h2 class="display-5 link-body-emphasis mb-1 blog-post-title">{{post.title}}</h2>
         <p class="blog-post-meta">{{post.timeStamp}} by <a href="/about">{{post.author}}</a></p>
 
-        <p>{{post.content}}</p>
+        <p>{{post.content|safe}}</p> 
+        {% comment %} safe keyword prevent from xss attack(when js queries are inserted)  {% endcomment %}
         <hr>
     </div>
     <div class="container">
@@ -31,36 +34,67 @@
             {% endif %}
         </div>
         {% for comment in comment %}
-            <div class="row my-3">
-                <div class="col-md-1">
-                    <img src="/static/img/user.png" alt="user" class="rounded mx-auto d-block w-100 p-2">
-                </div>
-                <div class="col-md-11">
-                    <b>{{comment.user.username}}</b> &emsp; {{comment.timeStamp | naturaltime}} <br>
-                    <div class="fs-5">{{comment.comment}}</div>
-                    <div class="reply mx-0">
-                        <p>
-                            <a class="btn btn-sm btn-primary" data-bs-toggle="collapse" href="#replyBox{{comment.sno}}" role="button" aria-expanded="false" aria-controls="replyBox{{comment.sno}}">
-                                Reply
-                            </a>
-                        </p>
-                        <div class="collapse" id="replyBox{{comment.sno}}">
-                            <div class="card card-body my-2">
-                                <form action="/blog/postComment" method="post">
-                                    {% csrf_token %}
-                                    <div class="mb-3">
+        <div class="row my-3">
+            <!-- Column for user image -->
+            <div class="col-md-1">
+                <img src="/static/img/user.png" alt="user" class="rounded mx-auto d-block w-100 p-2">
+            </div>
+        
+            <!-- Column for comment content -->
+            <div class="col-md-11">
+                <b>{{comment.user.username}}</b> &emsp; {{comment.timeStamp | naturaltime}} <br>
+                <div class="fs-5">{{comment.comment}}</div>
+        
+                {% if user.is_authenticated %}
+                <div class="reply mx-0">
+                    <p>
+                        <a class="btn btn-sm btn-primary mt-3" data-bs-toggle="collapse" href="#replyBox{{comment.sno}}" role="button" aria-expanded="false" aria-controls="replyBox{{comment.sno}}">
+                            Reply
+                        </a>
+                    </p>
+        
+                    <!-- Start of reply box -->
+                    <div class="collapse" id="replyBox{{comment.sno}}">
+                        <div class="card card-body my-2">
+                            <form action="/blog/postComment" method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <!-- Adjusted form input for better alignment -->
                                     <label for="comment">Post a Reply</label>
                                     <input type="text" class="form-control" name="comment" placeholder="Enter your comment">
                                     <input type="hidden" name="parentSno" value="{{comment.sno}}">
-                                    </div>
-                                    <input type="hidden" name="postSno" value="{{post.sno}}">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
-                            </div>
+                                </div>
+                                <input type="hidden" name="postSno" value="{{post.sno}}">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
                         </div>
                     </div>
+                    <!-- End of reply box -->
+                </div>
+                {% else %}
+                <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" href="#replyBox{{comment.sno}}" role="button" aria-expanded="false" aria-controls="replyBox{{comment.sno}}" disabled>
+                    Login to Reply
+                </button>
+                {% endif %}
+        
+                <!-- Replies section -->
+                <div class="replies my-2">
+                    {% for reply in repDict|get_val:comment.sno %}
+                    <div class="row">
+                        <div class="col-md-1">
+                            <img src="/static/img/user.png" alt="user" class="rounded mx-auto d-block w-75 p-2">
+                        </div>
+                        <div class="col-md-11">
+                            <b>{{reply.user.username}}</b> &emsp; {{reply.timeStamp | naturaltime}} <br>
+                            <div class="fs-5">{{reply.comment}}</div>
+                        </div>
+                    </div>
+                        <br>
+                    {% endfor %}
                 </div>
             </div>
+        </div>
+        
         {% endfor %}
     </div>
 </div>

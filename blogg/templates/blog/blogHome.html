@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 
 {% block title %} blogHome {% endblock title %}
+
+{% block js %}
+<script>
+  let previews = document.getElementsByClassName('preview');
+  Array.from(previews).forEach((element) => {
+    let content = element.innerText;
+    element.innerHTML = content;
+  });
+</script>
+{% endblock js %}
+
 {% block blogactive %} active {% endblock blogactive %}
 {% block body %}
 
@@ -12,7 +23,7 @@
           <div class="col p-4 d-flex flex-column position-static">
             <strong class="d-inline-block mb-2 text-primary-emphasis">Article by {{post.author}}</strong>
             <h3 class="mb-0"><a href="/blog/{{post.slug}}" class="text-dark" style="text-decoration: none;">{{post.title}}</a></h3>
-            <div class="mb-1 text-body-secondary">{{ post.content | truncatechars:300 }}</div>
+            <div class="mb-1 text-body-secondary"><div class="preview">{{ post.content|safe|truncatechars:300 }}</div></div>
             <div class="my-3">
                 <a href="/blog/{{post.slug}}" class="icon-link gap-1 icon-link-hover stretched-link btn btn-primary" role="button">
                     Continue reading

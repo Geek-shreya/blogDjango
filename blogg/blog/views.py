@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from blog.models import Post, BlogComment
+from blog.templatetags import extras
 
 
 def blogHome(request):
@@ -11,8 +12,15 @@ def blogHome(request):
 
 def blogPost(request, slug):
     post = Post.objects.filter(slug = slug).first()
-    comment = BlogComment.objects.filter(post=post)
-    context = {'post':post, 'comment':comment, 'user':request.user}
+    comment = BlogComment.objects.filter(post=post, parent=None)
+    replies = BlogComment.objects.filter(post=post).exclude(parent=None)
+    repDict = {}
+    for reply in replies:
+        if reply.parent.sno not in repDict.keys():
+            repDict[reply.parent.sno] = [reply]
+        else:
+            repDict[reply.parent.sno].append(reply)
+    context = {'post':post, 'comment':comment, 'user':request.user, 'repDict': repDict}
     return render(request, 'blog/blogPost.html',context)
     # return HttpResponse(f'blogpost: {slug}')
 
